@@ -19,6 +19,7 @@ from django.urls import path, include
 from txtSD import views
 
 urlpatterns = [
+    path('', views.index, name='home'),
     path('admin/', admin.site.urls),
     path('index/', views.index, name='index'),
     path('quiz/', views.quiz, name='quiz'),
