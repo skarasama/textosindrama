@@ -2,207 +2,114 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Caza-Palabras Clave</title>
-
+<title>Detective de Lectura</title>
 <style>
     body {
-        background: #0d0d0d;
-        color: #fff;
-        font-family: "Segoe UI", sans-serif;
-        margin: 0;
-        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #f2f2f2;
+        padding: 20px;
     }
-
-    h1 {
-        text-align: center;
-        margin-top: 20px;
-        text-shadow: 0 0 10px #00c6ff;
-    }
-
-    .text-box {
-        width: 80%;
-        margin: 20px auto;
-        background: rgba(255,255,255,0.05);
+    .card {
+        background: white;
         padding: 20px;
         border-radius: 10px;
-        border: 1px solid #333;
+        width: 600px;
+        margin: auto;
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
     }
-
-    #start-btn {
-        display: block;
-        margin: 10px auto;
-        padding: 10px 20px;
-        background: #00aaff;
-        border: none;
+    button {
+        background: #4CAF50;
         color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    button:hover {
+        background: #45a049;
+    }
+    #resultado {
         font-weight: bold;
-        border-radius: 8px;
-        cursor: pointer;
-    }
-
-    #start-btn:hover {
-        background: #0088cc;
-    }
-
-    #game-area {
-        width: 100%;
-        height: 350px;
-        position: relative;
-        overflow: hidden;
-        border-top: 1px solid #222;
-        border-bottom: 1px solid #222;
-        margin-top: 20px;
-    }
-
-    .word {
-        position: absolute;
-        padding: 5px 10px;
-        background: #111;
-        border-radius: 5px;
-        border: 1px solid #444;
-        cursor: pointer;
-        user-select: none;
-        transition: 0.1s;
-        font-size: 1.1rem;
-    }
-
-    .word.good { color: #00ff7f; }
-    .word.bad { color: #ff4444; }
-
-    #score, #timer {
-        text-align: center;
-        font-size: 1.4rem;
-    }
-
-    #game-over {
-        text-align: center;
-        margin-top: 20px;
-        display: none;
+        margin-top: 15px;
     }
 </style>
-
 </head>
+
 <body>
+<div class="card">
+    <h2>🔍 Detective de Lectura</h2>
+    <p id="texto"></p>
 
-<h1>🔍 Caza-Palabras Clave</h1>
+    <h3>Pregunta:</h3>
+    <p id="pregunta"></p>
 
-<div class="text-box">
-    <p id="reading-text">
-        “En un futuro distante, los estudiantes del Liceo Horizonte descubren una sala secreta
-        donde se esconde un antiguo dispositivo capaz de mostrar fragmentos perdidos de la historia.
-        Para activarlo, deben demostrar que comprenden correctamente cada texto que aparece.”
-    </p>
+    <div id="opciones"></div>
+
+    <p id="resultado"></p>
+    <p>Puntaje: <span id="puntos">0</span></p>
+    <button onclick="nuevaRonda()">Nueva ronda</button>
 </div>
 
-<div id="score">Puntaje: 0</div>
-<div id="timer">Tiempo: 20</div>
-
-<button id="start-btn">Iniciar Desafío</button>
-
-<div id="game-area"></div>
-
-<div id="game-over"></div>
-
 <script>
-    const readingText = document.getElementById("reading-text").innerText
-        .toLowerCase()
-        .replace(/[.,]/g, "");
-
-    const correctWords = readingText.split(" ");
-
-    const distractionWords = [
-        "planeta","dragon","matematicas","futbol","oscuro","laboratorio",
-        "dimension","telefono","profesor","tormenta","guardian","criatura",
-        "mapache","sistema","invierno","computadora"
-    ];
-
-    const gameArea = document.getElementById("game-area");
-    const scoreText = document.getElementById("score");
-    const timerText = document.getElementById("timer");
-    const startBtn = document.getElementById("start-btn");
-    const gameOver = document.getElementById("game-over");
-
-    let score = 0;
-    let timeLeft = 20;
-    let spawnInterval;
-    let timerInterval;
-
-    function spawnWord() {
-        const word = document.createElement("div");
-        word.classList.add("word");
-
-        const isCorrect = Math.random() < 0.5; 
-        let text = "";
-
-        if (isCorrect) {
-            text = correctWords[Math.floor(Math.random() * correctWords.length)];
-            word.classList.add("good");
-        } else {
-            text = distractionWords[Math.floor(Math.random() * distractionWords.length)];
-            word.classList.add("bad");
-        }
-
-        word.textContent = text;
-
-        word.style.left = Math.random() * (gameArea.offsetWidth - 100) + "px";
-        word.style.top = Math.random() * (gameArea.offsetHeight - 40) + "px";
-
-        word.addEventListener("click", () => {
-            if (word.classList.contains("good")) {
-                score++;
-                word.style.transform = "scale(1.3)";
-            } else {
-                score--;
-                word.style.transform = "scale(0.6)";
-            }
-
-            scoreText.textContent = "Puntaje: " + score;
-            setTimeout(() => word.remove(), 100);
-        });
-
-        gameArea.appendChild(word);
-
-        setTimeout(() => {
-            if (word.parentNode) word.remove();
-        }, 1200);
+const rondas = [
+    {
+        texto: "Ana encontró un perro perdido en el parque. El animal tenía una placa con un número. Ella llamó y el dueño llegó agradecido.",
+        pregunta: "¿Qué hizo Ana cuando encontró al perro?",
+        opciones: ["Lo llevó a su casa", "Llamó al dueño", "Lo dejó en el parque"],
+        correcta: 1
+    },
+    {
+        texto: "Tomás estudió toda la noche para la prueba. Aunque estaba cansado, logró concentrarse y obtuvo una excelente nota.",
+        pregunta: "¿Por qué obtuvo una buena nota Tomás?",
+        opciones: ["Porque estudió mucho", "Porque copió", "Porque la prueba era fácil"],
+        correcta: 0
+    },
+    {
+        texto: "En el museo, Sofía observó un cuadro muy antiguo. La guía explicó que tenía más de 500 años y pertenecía a un rey.",
+        pregunta: "¿Qué explicó la guía?",
+        opciones: ["Que el cuadro era moderno", "Que el cuadro pertenecía a un rey", "Que el cuadro estaba en mal estado"],
+        correcta: 1
     }
+];
 
-    function startGame() {
-        score = 0;
-        timeLeft = 20;
-        scoreText.textContent = "Puntaje: 0";
-        timerText.textContent = "Tiempo: 20";
-        gameOver.style.display = "none";
-        startBtn.style.display = "none";
+let puntos = 0;
+let actual = 0;
 
-        spawnInterval = setInterval(spawnWord, 400);
+function nuevaRonda() {
+    const indice = Math.floor(Math.random() * rondas.length);
+    actual = indice;
 
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            timerText.textContent = "Tiempo: " + timeLeft;
+    const r = rondas[indice];
+    document.getElementById("texto").innerText = r.texto;
+    document.getElementById("pregunta").innerText = r.pregunta;
 
-            if (timeLeft <= 0) endGame();
-        }, 1000);
+    const opcionesDiv = document.getElementById("opciones");
+    opcionesDiv.innerHTML = "";
+
+    r.opciones.forEach((op, i) => {
+        let btn = document.createElement("button");
+        btn.innerText = op;
+        btn.onclick = () => responder(i);
+        opcionesDiv.appendChild(btn);
+    });
+
+    document.getElementById("resultado").innerText = "";
+}
+
+function responder(i) {
+    const r = rondas[actual];
+    if (i === r.correcta) {
+        puntos++;
+        document.getElementById("resultado").innerText = "✔ ¡Correcto!";
+    } else {
+        document.getElementById("resultado").innerText = "✘ Incorrecto. Intenta otra ronda.";
     }
+    document.getElementById("puntos").innerText = puntos;
+}
 
-    function endGame() {
-        clearInterval(spawnInterval);
-        clearInterval(timerInterval);
-        gameArea.innerHTML = "";
-
-        gameOver.style.display = "block";
-        gameOver.innerHTML = `
-            <p>📘 Desafío terminado</p>
-            <p><strong>Puntaje final: ${score}</strong></p>
-            <button onclick="startGame()">Jugar otra vez</button>
-        `;
-
-        startBtn.style.display = "block";
-    }
-
-    startBtn.addEventListener("click", startGame);
+nuevaRonda();
 </script>
-
 </body>
 </html>
+
