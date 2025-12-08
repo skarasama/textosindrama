@@ -26,7 +26,7 @@ SECRET_KEY = 'sv&@3z4ntkl#ei7(*k01nb9)gyi#!gu8=d8%orhxhw_-+u3$9s'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['https://textosindrama.onrender.com']
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'txtSD.Usuario'
 
