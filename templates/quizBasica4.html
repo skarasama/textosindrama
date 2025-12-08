@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Final</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-image: url("https://img.freepik.com/premium-photo/abstract-blue-watercolor-gradient-paint-grunge-texture-background_62391-961.jpg?w=2000");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #2b3d52;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #6ec1e4, #2980b9);
+            padding: 1em 0;
+        }
+
+        .navbar a {
+            color: #eaf6fb !important;
+            margin: 0 1em;
+            text-decoration: none;
+        }
+
+        #container_quiz {
+            max-width: 1000px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2em;
+            margin: 2em auto;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* TEXTO DEL FRAGMENTO */
+        .fragmento {
+            background-color: #eaf6fb;
+            padding: 1em;
+            border-left: 4px solid #6ec1e4;
+            border-radius: 6px;
+            font-style: italic;
+            margin-bottom: 1.5em;
+            line-height: 1.6;
+        }
+
+        /* PREGUNTAS */
+        .question p {
+            background-color: #eaf6fb;
+            padding: 0.8em;
+            border-left: 4px solid #6ec1e4;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #2b3d52;
+            margin-bottom: 1em;
+        }
+
+        .question div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.7em;
+            cursor: pointer;
+        }
+
+        .question input[type="radio"] {
+            margin-right: 0.6em;
+            accent-color: #2980b9;
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+
+        .question label {
+            width: 100%;
+            padding: 0.6em;
+            border-radius: 6px;
+            border: 1px solid #d0e6f7;
+            background: #ffffff;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #2b3d52;
+        }
+
+        .question label:hover {
+            background-color: #d0e6f7;
+        }
+
+        .question input[type="radio"]:checked + label {
+            background-color: #6ec1e4;
+            color: white;
+            font-weight: bold;
+            border-color: #2980b9;
+        }
+
+        .btn-custom {
+            background-color: #6ec1e4;
+            color: white;
+            padding: 0.7em 1.5em;
+            border-radius: 10px;
+            border: none;
+            transition: 0.3s;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .btn-custom:hover {
+            background-color: #2980b9;
+        }
+
+        footer {
+            background: #2980b9;
+            color: #f0f8ff;
+            padding: 1em;
+            text-align: center;
+            margin-top: 3em;
+        }
+    </style>
+</head>
+
+<body>
+
+        <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg" 
+        style="background: linear-gradient(90deg, #6ec1e4, #3a9ccf); padding: 1em 0;">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'index' %}">Texto sin Drama</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" 
+                    aria-expanded="false" aria-label="Toggle navigation"
+                    style="border-color: white;">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}" 
+                        style="color:#eaf6fb; margin:0 1em;">Inicio</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'listaQuiz' %}" 
+                        style="color:#eaf6fb; margin:0 1em;">Ejercicios</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'listaQuiz' %}" 
+                        style="color:#eaf6fb; margin:0 1em;">Quizzes</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" 
+                        style="color:#eaf6fb; margin:0 1em;">Contacto</a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'perfil' %}" 
+                            style="color:#eaf6fb; margin:0 1em;">Perfil</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" 
+                            style="color:#eaf6fb; margin:0 1em;">Cerrar Sesión</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}" 
+                            style="color:#eaf6fb; margin:0 1em;">Iniciar Sesión</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ingresoUsuarios' %}" 
+                            style="color:#eaf6fb; margin:0 1em;">Registrarse</a>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <div id="container_quiz">
+
+        <h3 class="text-center" style="color:#2980b9;">Nivel Final – Dificultad Épica</h3>
+        <p class="text-center mb-4">Lee cada fragmento y responde. Cada respuesta correcta desbloquea el siguiente fragmento.</p>
+
+        <!-- FRAGMENTOS Y PREGUNTAS -->
+
+        <!-- 1 -->
+        <div class="fragmento" style="display:block;">
+            Tras días siguiendo mapas antiguos, Lía y Tomás llegaron a las Ruinas del Horizonte Perdido. 
+            El aire vibraba débilmente, como si la estructura misma emitiera un murmullo. 
+            Una inscripción desgastada decía:  
+            <i>“El verdadero camino no siempre se ve, pero siempre se siente”.</i>
+        </div>
+
+        <div class="question" style="display:block;">
+            <p>1) ¿Qué revela mejor la función de la inscripción encontrada?</p>
+
+            <div>
+                <input type="radio" id="q1a" name="q1" value="a">
+                <label for="q1a">A) Una advertencia literal sobre trampas ocultas.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q1b" name="q1" value="b">
+                <label for="q1b">B) Un mensaje metafórico sobre confiar en la intuición.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q1c" name="q1" value="c">
+                <label for="q1c">C) Un registro histórico sobre el arquitecto del templo.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q1d" name="q1" value="d">
+                <label for="q1d">D) Un acertijo matemático incompleto.</label>
+            </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="fragmento" style="display:none;">
+            Avanzando entre columnas rotas, encontraron un mecanismo compuesto por engranajes suspendidos en el aire, girando lentamente sin tocarse. 
+            Cada engranaje emitía un tono distinto que, juntos, formaban una melodía irregular pero repetitiva.
+        </div>
+
+        <div class="question" style="display:none;">
+            <p>2) ¿Qué inferencia es la más lógica sobre el mecanismo?</p>
+
+            <div>
+                <input type="radio" id="q2a" name="q2" value="a">
+                <label for="q2a">A) Era un instrumento musical ceremonial.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q2b" name="q2" value="b">
+                <label for="q2b">B) Funcionaba como una cerradura sonora sensible a patrones.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q2c" name="q2" value="c">
+                <label for="q2c">C) Giraba al azar sin propósito definido.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q2d" name="q2" value="d">
+                <label for="q2d">D) Era un reloj antiguo que marcaba horas solares.</label>
+            </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="fragmento" style="display:none;">
+            Tras descifrar la melodía, un puente de luz se formó bajo sus pies. 
+            No tenía barandas y parecía ondular como agua.  
+            Lía avanzó sin dudar; Tomás dudó al ver que el puente desaparecía detrás de ellos, imposibilitando retroceder.
+        </div>
+
+        <div class="question" style="display:none;">
+            <p>3) ¿Qué tema narrativo se refuerza con el comportamiento del puente?</p>
+
+            <div>
+                <input type="radio" id="q3a" name="q3" value="a">
+                <label for="q3a">A) La necesidad de rapidez sobre reflexión.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q3b" name="q3" value="b">
+                <label for="q3b">B) El carácter irreversible de algunas decisiones.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q3c" name="q3" value="c">
+                <label for="q3c">C) La importancia de la fuerza física.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q3d" name="q3" value="d">
+                <label for="q3d">D) La posibilidad de rutas alternativas.</label>
+            </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="fragmento" style="display:none;">
+            En la sala siguiente, una estatua sostenía un orbe dividido en tres capas rotatorias. 
+            Cada capa mostraba símbolos diferentes que cambiaban según la posición del observador. 
+            Tomás creyó ver un patrón; Lía insistió en verlo desde múltiples ángulos.
+        </div>
+
+        <div class="question" style="display:none;">
+            <p>4) ¿Qué habilidad es clave según el comportamiento del orbe?</p>
+
+            <div>
+                <input type="radio" id="q4a" name="q4" value="a">
+                <label for="q4a">A) Adaptar la perspectiva antes de interpretar información.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q4b" name="q4" value="b">
+                <label for="q4b">B) Memorizar símbolos rápidamente.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q4c" name="q4" value="c">
+                <label for="q4c">C) Analizar sonidos y ritmos ocultos.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q4d" name="q4" value="d">
+                <label for="q4d">D) Mantenerse quieto para no activar trampas.</label>
+            </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="fragmento" style="display:none;">
+            El techo comenzó a bajar lentamente, obligándolos a encontrar un patrón específico de presión en el piso. 
+            Las baldosas brillaban en secuencias distintas cada vez que Tomás o Lía avanzaban.
+        </div>
+
+        <div class="question" style="display:none;">
+            <p>5) ¿Qué estrategia era la más probable para resolver el acertijo del piso?</p>
+
+            <div>
+                <input type="radio" id="q5a" name="q5" value="a">
+                <label for="q5a">A) Presionar todas las baldosas simultáneamente.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q5b" name="q5" value="b">
+                <label for="q5b">B) Seguir la secuencia luminosa como una ruta lógica.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q5c" name="q5" value="c">
+                <label for="q5c">C) Evitar todas las baldosas brillantes.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q5d" name="q5" value="d">
+                <label for="q5d">D) Caminar en línea recta sin detenerse.</label>
+            </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="fragmento" style="display:none;">
+            Finalmente alcanzaron la Cámara del Eco Eterno.  
+            Allí, una voz desconocida respondía cada frase que decían, pero siempre contradiciéndolos.  
+            Comprendieron que la cámara no revelaría verdades, sino que pondría a prueba su capacidad de distinguir realidad de ilusión.
+        </div>
+
+        <div class="question" style="display:none;">
+            <p>6) ¿Qué capacidad evaluaba principalmente la Cámara del Eco?</p>
+
+            <div>
+                <input type="radio" id="q6a" name="q6" value="a">
+                <label for="q6a">A) La memoria a corto plazo.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q6b" name="q6" value="b">
+                <label for="q6b">B) La habilidad de identificar contradicciones.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q6c" name="q6" value="c">
+                <label for="q6c">C) La velocidad de reacción física.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q6d" name="q6" value="d">
+                <label for="q6d">D) La resistencia emocional.</label>
+            </div>
+        </div>
+
+        <!-- 7 -->
+        <div class="fragmento" style="display:none;">
+            Un mural final mostraba a dos figuras avanzando hacia un faro brillante, pero solo una proyectaba sombra.  
+            Lía señaló que el detalle debía significar algo importante; Tomás creyó que era un error del artista.
+        </div>
+
+        <div class="question" style="display:none;">
+            <p>7) ¿Cuál es la interpretación más coherente del mural?</p>
+
+            <div>
+                <input type="radio" id="q7a" name="q7" value="a">
+                <label for="q7a">A) Una figura simboliza la duda y la otra la claridad.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q7b" name="q7" value="b">
+                <label for="q7b">B) La sombra indica quién es digno de continuar.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q7c" name="q7" value="c">
+                <label for="q7c">C) El mural representa la separación física de ambos personajes.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q7d" name="q7" value="d">
+                <label for="q7d">D) Es un mapa que señala caminos ocultos.</label>
+            </div>
+        </div>
+
+        <!-- 8 -->
+        <div class="fragmento" style="display:none;">
+            Finalmente, la cámara se iluminó por completo y un cristal azul emergió del suelo.  
+            No emitía luz propia, pero reflejaba todo lo que había ocurrido en su travesía. 
+            El cristal representaba aquello que solo se revela tras comprender cada prueba.
+        </div>
+
+        <div class="question" style="display:none;">
+            <p>8) ¿Qué simboliza mejor el cristal?</p>
+
+            <div>
+                <input type="radio" id="q8a" name="q8" value="a">
+                <label for="q8a">A) El final literal del templo.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q8b" name="q8" value="b">
+                <label for="q8b">B) Una recompensa material sin mayor relevancia.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q8c" name="q8" value="c">
+                <label for="q8c">C) La comprensión profunda adquirida tras todas las pruebas.</label>
+            </div>
+
+            <div>
+                <input type="radio" id="q8d" name="q8" value="d">
+                <label for="q8d">D) El registro histórico de otros viajeros.</label>
+            </div>
+        </div>
+
+        <div class="feedback text-center" id="feedback"></div>
+
+        <button class="btn-custom mt-3" id="sendButton" onclick="evaluateCurrentQuestion()">Enviar Respuesta</button>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Lectura Pro</p>
+    </footer>
+
+    <!-- ===========================
+        JAVASCRIPT
+    ============================ -->
+    <script>
+        const correctAnswers = ['b','b','b','a','b','b','a','c'];
+
+        let index = 0;
+        const fragments = document.querySelectorAll('.fragmento');
+        const questions = document.querySelectorAll('.question');
+
+        function evaluateCurrentQuestion() {
+
+            const question = questions[index];
+            const selected = question.querySelector('input[type="radio"]:checked');
+
+            if (!selected) {
+                alert("Selecciona una alternativa.");
+                return;
+            }
+
+            const feedback = document.getElementById("feedback");
+
+            if (selected.value === correctAnswers[index]) {
+                feedback.innerHTML = "<span style='color:green;'>✔ Correcto</span>";
+            } else {
+                feedback.innerHTML = "<span style='color:red;'>✘ Incorrecto</span>";
+            }
+
+            setTimeout(() => {
+                feedback.innerHTML = "";
+                fragments[index].style.display = "none";
+                questions[index].style.display = "none";
+
+                index++;
+
+                if (index < questions.length) {
+                    fragments[index].style.display = "block";
+                    questions[index].style.display = "block";
+                } else {
+                    finishQuiz();
+                }
+
+            }, 1000);
+        }
+
+        function finishQuiz() {
+            let correctCount = 0;
+
+            const inputs = document.querySelectorAll('input[type="radio"]:checked');
+            inputs.forEach((input, i) => {
+                if (input.value === correctAnswers[i]) correctCount++;
+            });
+
+            if (correctCount === 8) window.location.href = "{% url 'oro1' %}";
+            else if (correctCount >= 4) window.location.href = "{% url 'plata1' %}";
+            else window.location.href = "{% url 'bronce1' %}";
+        }
+    </script>
+
+</body>
+</html>

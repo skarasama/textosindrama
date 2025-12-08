@@ -1,0 +1,278 @@
+<!DOCTYPE html> 
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Comprensión Lectora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* 🌐 Global */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0f8ff; /* blanco con leve tono celeste */
+            color: #2b3d52; /* azul grisáceo suave */
+        }
+
+        /* 🔹 Navbar */
+        .navbar {
+            background: linear-gradient(90deg, #6ec1e4, #2980b9);
+            padding: 1em 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .navbar a {
+            color: #eaf6fb !important;
+            margin: 0 0.8em;
+            font-weight: 500;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .navbar a:hover {
+            color: #ffffff !important;
+            text-shadow: 0 0 6px rgba(255,255,255,0.7);
+        }
+
+        /* 🔹 Header con flores */
+        .header {
+            text-align: center;
+            padding: 5em 1em;
+            background: url("https://img.freepik.com/fotos-premium/flores-azuis-em-um-fundo-branco_881695-1209.jpg?w=2000") no-repeat center center;
+            background-size: cover;
+            border-radius: 0 0 25px 25px;
+            color: #f0f8ff;
+            position: relative;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(41,128,185,0.7); /* azul semitransparente */
+            border-radius: 0 0 25px 25px;
+            z-index: 0;
+        }
+
+        .header h1,
+        .header p,
+        .header .btn {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+            text-shadow: 0 0 8px rgba(0,0,0,0.6);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            max-width: 700px;
+            margin: 0 auto 1.5em;
+        }
+
+        .header .btn {
+            background: #6ec1e4;
+            color: #fff;
+            font-size: 1.1rem;
+            padding: 0.9em 2em;
+            border-radius: 8px;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .header .btn:hover {
+            background: #5aaed1;
+            transform: translateY(-3px);
+        }
+
+        /* 🔹 Container */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 3em auto;
+            gap: 2em;
+            padding: 0 1em;
+        }
+
+        .main-content {
+            flex: 3;
+        }
+
+        .section-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2980b9;
+            text-align: center;
+            margin-bottom: 1.5em;
+        }
+
+        /* 🔹 Cards */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5em;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card h3 {
+            margin: 0;
+            padding: 1em;
+            background: #6ec1e4;
+            color: #fff;
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            padding: 1em;
+            color: #34495e;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* 🔹 Sidebar */
+        .sidebar {
+            flex: 1;
+            padding: 1.8em;
+            background: #f9fcff;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            align-self: start;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.2em;
+            color: #2980b9;
+        }
+
+        .sidebar a {
+            display: block;
+            margin: 0.8em 0;
+            padding: 0.9em;
+            font-weight: 500;
+            color: #2980b9;
+            background: #eaf6fb;
+            border: 1px solid #6ec1e4;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar a:hover {
+            background: #6ec1e4;
+            color: #fff;
+        }
+
+        /* 🔹 Footer */
+        footer {
+            width: 100%;
+            position:static;
+            bottom: 0;
+            background-color: #000000;
+            color: #2980b9;
+            padding: 1em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'index' %}">Texto sin Drama</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Ejercicios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Quizzes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Perfil</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Cerrar Sesión</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'ingresoUsuarios' %}">Registrarse</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header con flores -->
+    <div class="header">
+        <h1>Bienvenido a Texto sin Drama</h1>
+        <p id="mensaje-bienvenida">Mejora tus habilidades lectoras con ejercicios interactivos y recompensas. ¡Empieza ahora!</p>
+        <a href="{% url 'antesEmpezar' %}" class="btn btn-primary btn-lg">Comenzar</a>
+    </div>
+
+    <!-- Contenido con categorías -->
+    <div class="container">
+        <div class="main-content">
+            <h4 class="section-title">Conoce las historias según tu Nivel Educativo</h4>
+            <div class="cards-container">
+                <div class="card">
+                    <a href="{% url 'historiaBasica' %}">
+                        <img src="{% static 'imagenes/basica.jpg' %}" alt="Básica">
+                    </a>
+                    <h3>Básica</h3>
+                    <p>Una aventura de fantasía protagonizada por dos hermanos, que descubren un mundo distinto al nuestro.</p>
+                </div>
+                
+                <div class="card">
+                    <img src="{% static 'imagenes/media.png' %}" alt="Media">
+                    <h3>Media</h3>
+                    <p>Una emocionante historia de un valiente guerrero que lucha para salvar al mundo de la destrucción.</p>
+                </div>
+                <div class="card">
+                    <img src="{% static 'imagenes/u.jpg' %}" alt="Universidad">
+                    <h3>Universidad</h3>
+                    <p>Adéntrate en la vida de un joven universitario cuyo objetivo es estudiar para salvar su carrera.</p>
+                </div>
+                <div class="card">
+                    <img src="{% static 'imagenes/chamba.png' %}" alt="Laboral">
+                    <h3>Laboral</h3>
+                    <p>Una historia sobre los retos del mundo laboral que te enseñará a enfrentarlos y comprender contratos.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <h2>Acceso</h2>
+            <a href="{% url 'login' %}">Iniciar Sesión como Usuario</a>
+            <a href="{% url 'ingresoUsuarios' %}">Registrarse</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2025 Lectura Pro. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

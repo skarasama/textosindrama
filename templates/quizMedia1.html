@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz 1</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url("https://img.freepik.com/premium-photo/abstract-blue-watercolor-gradient-paint-grunge-texture-background_62391-961.jpg?w=2000");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #2b3d52;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #6ec1e4, #2980b9);
+            color: #fff;
+            padding: 1em 0;
+        }
+        
+        .navbar a {
+            color: #eaf6fb !important;
+        }
+
+        main {
+            padding: 30px 0;
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .vn-wrapper {
+            width: 100%;
+            height: calc(100vh - 250px);
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        /* TEXTO DEL NARRADOR */
+        .narrator-box {
+            background: rgba(0, 0, 0, 0.45);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        /* TEXTO DE LA ESCENA */
+        .scene-text {
+            background: rgba(0, 0, 0, 0.35);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        /* GRID 2x2 */
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .choice-btn {
+            padding: 18px;
+            border-radius: 14px;
+            background: #2980b9;
+            border: 2px solid #1f628c;
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .choice-btn:hover {
+            background: #3498db;
+            transform: translateY(-3px);
+        }
+
+        .choice-correct {
+            background: #27ae60 !important;
+            border-color: #1e8c4c !important;
+        }
+
+        .choice-wrong {
+            background: #c0392b !important;
+            border-color: #922b21 !important;
+            opacity: 0.7;
+        }
+
+        .feedback-area {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        footer {
+            background: #000000;
+            color: #2980b9;
+            padding: 1em;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Texto sin Drama</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Ejercicios</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Quizzes</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main>
+
+<div class="vn-wrapper">
+
+    <div class="narrator-box" id="narratorText">
+        Bienvenido viajero… tu aventura comienza.
+    </div>
+
+    <div class="scene-text" id="sceneText">
+        Cargando escena…
+    </div>
+
+    <!-- PANEL 2x2 -->
+    <div class="choices-grid" id="choicesPanel"></div>
+
+    <div class="feedback-area" id="feedbackArea"></div>
+
+</div>
+
+</main>
+
+<!-- SCRIPT -->
+<script>
+const scenes = [
+    {
+        narrator:"Hola viajero… Tus respuestas decidirán el destino de Lía y Tomás.",
+        scene:"Lía y Tomás se enfrentan a una bandada de murciélagos en el bosque.",
+        choices:[
+            {text:"Usaron palos para defenderse.", id:"a"},
+            {text:"Se agacharon para evitarlos.", id:"b"},
+            {text:"Corrieron sin mirar atrás.", id:"c"},
+            {text:"No hicieron nada.", id:"d"},
+        ],
+        correct:"b"
+    },
+    {
+        narrator:"Bien jugado. Ahora el bosque te revela un nuevo desafío…",
+        scene:"Encuentran un río cristalino que conecta con un antiguo templo.",
+        choices:[
+            {text:"No lograron salir.", id:"a"},
+            {text:"Buscaron a los murciélagos.", id:"b"},
+            {text:"Encontraron un río que cruza a un templo.", id:"c"},
+            {text:"Gritaron por ayuda.", id:"d"},
+        ],
+        correct:"c"
+    },
+    {
+        narrator:"El templo guarda misterios… y pruebas.",
+        scene:"Una estatua sostiene una gema brillante en sus manos.",
+        choices:[
+            {text:"Un rubí", id:"a"},
+            {text:"Un zafiro", id:"b"},
+            {text:"Una esmeralda", id:"c"},
+            {text:"Un diamante", id:"d"},
+        ],
+        correct:"d"
+    },
+    {
+        narrator:"El aire cambia. Algo despierta…",
+        scene:"El suelo comienza a temblar violentamente.",
+        choices:[
+            {text:"Salir rápidamente del templo.", id:"a"},
+            {text:"Quedarse quietos.", id:"b"},
+            {text:"Mover las piedras del altar.", id:"c"},
+            {text:"Gritar por ayuda.", id:"d"},
+        ],
+        correct:"a"
+    },
+    {
+        narrator:"Última prueba… tu decisión final importa.",
+        scene:"El guardián reaparece, bloqueando la salida.",
+        choices:[
+            {text:"No lograron salir.", id:"a"},
+            {text:"Apareció el guardián nuevamente.", id:"b"},
+            {text:"Decidieron regresar.", id:"c"},
+            {text:"Se cayeron al río.", id:"d"},
+        ],
+        correct:"b"
+    }
+];
+
+let idx = 0;
+let score = 0;
+
+const narratorText = document.getElementById("narratorText");
+const sceneText = document.getElementById("sceneText");
+const choicesPanel = document.getElementById("choicesPanel");
+const feedback = document.getElementById("feedbackArea");
+
+function loadScene() {
+    const s = scenes[idx];
+
+    narratorText.innerText = s.narrator;
+    sceneText.innerText = s.scene;
+    feedback.innerHTML = "";
+
+    choicesPanel.innerHTML = "";
+    s.choices.forEach(op=>{
+        let btn = document.createElement("button");
+        btn.className = "choice-btn";
+        btn.innerText = op.text;
+        btn.onclick = ()=>check(op.id, btn);
+        btn.dataset.id = op.id;
+        choicesPanel.appendChild(btn);
+    });
+}
+
+function check(id, btn){
+    const correct = scenes[idx].correct;
+
+    if(id === correct){
+        btn.classList.add("choice-correct");
+        score++;
+        feedback.innerHTML = "<span style='color:#27ae60;'>✔ Correcto</span>";
+
+        setTimeout(()=>{
+            idx++;
+            if(idx < scenes.length) loadScene();
+            else finishQuiz();
+        },700);
+
+    } else {
+        btn.classList.add("choice-wrong");
+        btn.disabled = true;
+
+        // Mostrar cuál era la correcta
+        document.querySelector(`[data-id='${correct}']`).classList.add("choice-correct");
+
+        feedback.innerHTML = "<span style='color:#c0392b;'>✘ Incorrecto</span>";
+
+        setTimeout(()=>{
+            idx++;
+            if(idx < scenes.length) loadScene();
+            else finishQuiz();
+        },1100);
+    }
+}
+
+function finishQuiz(){
+    const percent = Math.round((score / scenes.length)*100);
+
+    if(percent === 100){
+        window.location.href = "/oro1/";
+    } else if(percent >= 50){
+        window.location.href = "/plata1/";
+    } else if(percent > 0){
+        window.location.href = "/bronce1/";
+    } else {
+        window.location.href = "/sinMedalla1/";
+    }
+}
+
+loadScene();
+</script>
+
+<footer>
+    <p>&copy; 2025 Lectura Pro. Todos los derechos reservados.</p>
+</footer>
+
+</body>
+</html>
+

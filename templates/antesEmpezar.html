@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antes de Empezar - Cómo Realizar un Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url("{% static 'imagenes/humanos1.png' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #2b3d52;
+            flex: 1;
+        }
+
+        /* 🔹 Navbar */
+        .navbar {
+            background: linear-gradient(90deg, #6ec1e4, #2980b9);
+            color: #fff;
+            padding: 1em 0;
+        }
+
+        .navbar a {
+            color: #eaf6fb !important;
+            text-decoration: none;
+            margin: 0 1em;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #ffffff !important;
+            text-shadow: 0 0 6px rgba(255,255,255,0.7);
+        }
+
+        /* 🔹 Caja central */
+        .content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3em;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            max-width: 850px;
+            margin: 120px auto;
+            text-align: left;
+        }
+        .content h2 {
+            color: #2980b9;
+            font-weight: 700;
+            margin-bottom: 1em;
+        }
+        .content p {
+            font-size: 1.1em;
+            margin-bottom: 2em;
+            color: #34495e;
+        }
+
+        /* 🔹 Pasos */
+        .steps .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1em;
+            margin-bottom: 1.5em;
+            background: #f0faff;
+            padding: 1em;
+            border-radius: 10px;
+            border-left: 5px solid #6ec1e4;
+            transition: 0.3s;
+        }
+        .steps .step:hover {
+            background: #eaf6fb;
+        }
+        .step-icon {
+            font-size: 1.6em;
+            color: #2980b9;
+        }
+        .steps strong {
+            color: #2b3d52;
+        }
+
+        /* 🔹 Botón principal */
+        .btn-start {
+            width: 100%;
+            font-size: 1.2em;
+            background: #6ec1e4;
+            border: none;
+            padding: 0.8em;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #fff;
+            transition: 0.3s;
+        }
+        .btn-start:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* 🔹 Footer */
+        footer {
+            width: 100%;
+            position:static;
+            bottom: 0;
+            background-color: #000000;
+            color: #2980b9;
+            padding: 1em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 🔹 Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'index' %}">Texto sin Drama</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Ejercicios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Quizzes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Perfil</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Cerrar Sesión</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'ingresoUsuarios' %}">Registrarse</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 🔹 Contenido -->
+    <div class="content">
+        <h2>Antes de Empezar: ¿Cómo Realizar un Quiz?</h2>
+        <p>Conoce algunas recomendaciones antes de comenzar:</p>
+        
+        <div class="steps">
+            <div class="step">
+                <span class="step-icon">1️⃣</span>
+                <div><strong>Lee cada pregunta atentamente:</strong> No te apresures, analiza cada opción.</div>
+            </div>
+            <div class="step">
+                <span class="step-icon">2️⃣</span>
+                <div><strong>Selecciona la mejor respuesta:</strong> Escoge la que más se ajuste a la pregunta.</div>
+            </div>
+            <div class="step">
+                <span class="step-icon">3️⃣</span>
+                <div><strong>Gestiona tu tiempo:</strong> Distribuye bien tu tiempo si el quiz es limitado.</div>
+            </div>
+            <div class="step">
+                <span class="step-icon">4️⃣</span>
+                <div><strong>No te preocupes por equivocarte:</strong> ¡Aprender de los errores es clave!</div>
+            </div>
+        </div>
+
+        <a href="{% url 'listaQuiz' %}" class="btn btn-start mt-4">🚀 ¡Estoy listo! Empezar Quiz</a>
+    </div>
+
+    <!-- 🔹 Footer -->
+    <footer>
+        <p>&copy; 2025 Lectura Pro. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

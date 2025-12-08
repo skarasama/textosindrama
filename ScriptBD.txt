@@ -1,0 +1,79 @@
+CREATE DATABASE IF NOT EXISTS quizDB;
+USE quizDB;
+
+CREATE TABLE Usuario (
+    idUsuario INT AUTO_INCREMENT PRIMARY KEY,
+    correoElectronico VARCHAR(255) NOT NULL UNIQUE,
+    contraseña VARCHAR(255) NOT NULL,
+    nivelEducativo VARCHAR(100),
+    CHECK (correoElectronico LIKE '%@%.%')
+);
+
+
+
+CREATE TABLE Quiz (
+    idQuiz VARCHAR(50) PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+
+CREATE TABLE Pregunta (
+    idPregunta INT AUTO_INCREMENT PRIMARY KEY,
+    textoPregunta TEXT NOT NULL,
+    idTipoPregunta INT, 
+    idQuiz VARCHAR(50),
+    FOREIGN KEY (idQuiz) REFERENCES Quiz(idQuiz) ON DELETE CASCADE,
+    FOREIGN KEY (idTipoPregunta) REFERENCES TipoPregunta(idTipoPregunta) ON DELETE CASCADE
+);
+
+
+
+CREATE TABLE Respuesta (
+    idRespuesta INT AUTO_INCREMENT PRIMARY KEY,
+    textoRespuesta TEXT NOT NULL,
+    esCorrecta BOOLEAN NOT NULL,
+    idPregunta INT,
+    FOREIGN KEY (idPregunta) REFERENCES Pregunta(idPregunta) ON DELETE CASCADE
+);
+
+
+CREATE TABLE ResultadoQuiz (
+    idResultado INT AUTO_INCREMENT PRIMARY KEY,
+    idUsuario INT,
+    fechaCompletado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    puntuacion INT,
+    idPregunta INT,
+    idRespuesta INT,
+    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE,
+    FOREIGN KEY (idPregunta) REFERENCES Pregunta(idPregunta) ON DELETE CASCADE,
+    FOREIGN KEY (idRespuesta) REFERENCES Respuesta(idRespuesta) ON DELETE CASCADE
+);
+
+
+CREATE TABLE TipoPregunta (
+    idTipoPregunta INT AUTO_INCREMENT PRIMARY KEY,
+    tipoPregunta VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE ResultadoDetalle (
+    idResultadoDetalle INT AUTO_INCREMENT PRIMARY KEY,
+    idResultado INT,
+    idPregunta INT,
+    idRespuesta INT,
+    esCorrecta BOOLEAN,
+    FOREIGN KEY (idResultado) REFERENCES ResultadoQuiz(idResultado),
+    FOREIGN KEY (idPregunta) REFERENCES Pregunta(idPregunta),
+    FOREIGN KEY (idRespuesta) REFERENCES Respuesta(idRespuesta)
+);
+
+
+
+CREATE INDEX idx_idUsuario ON ResultadoQuiz(idUsuario);
+CREATE INDEX idx_idQuiz ON Pregunta(idQuiz);
+
+
+

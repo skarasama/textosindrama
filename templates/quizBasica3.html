@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Avanzado</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body {
+        background-image: url("https://img.freepik.com/premium-photo/abstract-blue-watercolor-gradient-paint-grunge-texture-background_62391-961.jpg?w=2000");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #2b3d52;
+    }
+
+    .navbar {
+        background: linear-gradient(90deg, #6ec1e4, #2980b9);
+        padding: 1em 0;
+    }
+    .navbar a { color:#eaf6fb !important; margin:0 1em; }
+
+    #container_quiz {
+        max-width:1000px;
+        background-color:rgba(255,255,255,0.95);
+        border-radius:15px;
+        box-shadow:0 6px 20px rgba(0,0,0,0.15);
+        padding:2em;
+        margin:2em auto;
+    }
+
+    .fragmento {
+        background-color:#eaf6fb;
+        padding:1em;
+        border-left:4px solid #6ec1e4;
+        border-radius:6px;
+        font-style:italic;
+        margin-bottom:1.5em;
+        line-height:1.6;
+    }
+
+    .question p {
+        background-color:#eaf6fb;
+        padding:0.8em;
+        border-left:4px solid #6ec1e4;
+        border-radius:6px;
+        font-weight:bold;
+        margin-bottom:1em;
+    }
+
+    .question div { display:flex; align-items:center; margin-bottom:0.8em; }
+
+    .question input[type="radio"] {
+        margin-right:0.6em;
+        accent-color:#2980b9;
+        transform:scale(1.1);
+    }
+
+    .question label {
+        flex:1;
+        padding:0.6em;
+        border-radius:6px;
+        border:1px solid #d0e6f7;
+        background:white;
+        cursor:pointer;
+        transition:0.3s;
+    }
+    .question label:hover { background:#d0e6f7; }
+    .question input[type="radio"]:checked + label {
+        background-color:#6ec1e4; color:white; font-weight:bold;
+    }
+
+    .btn-custom {
+        background:#6ec1e4;
+        color:white;
+        padding:0.7em 1.5em;
+        font-size:1rem;
+        border-radius:8px;
+        display:block;
+        margin:0 auto;
+        border:none;
+        transition:0.3s;
+    }
+    .btn-custom:hover { background:#2980b9; transform:translateY(-2px); }
+
+    footer {
+        background:#2980b9;
+        color:#f0f8ff;
+        padding:1em;
+        text-align:center;
+        margin-top:3em;
+    }
+</style>
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Texto sin Drama</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Ejercicios</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Quizzes</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Perfil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Cerrar Sesión</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'ingresoUsuarios' %}">Registrarse</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div id="container_quiz" class="container">
+
+    <h3 class="text-center mb-4" style="color:#2980b9;">Nivel Avanzado</h3>
+
+    <!-- CONTENIDO DEL QUIZ -->
+    <div>
+
+        <!-- FRAGMENTO 1 -->
+        <div class="fragmento">
+            Tras cruzar la puerta mística, Lía y Tomás emergen en un desierto tan vasto que parece devorar el horizonte.  
+            Las dunas ondulan como si respiraran, y dos lunas altas proyectan sombras que se alargan con un movimiento casi consciente.
+        </div>
+
+        <div class="question">
+            <p>11) ¿Qué sugiere el uso de “sombras que se alargan con un movimiento consciente”?</p>
+            <div><input type="radio" id="q11a" name="q11" value="a"><label for="q11a">a) Que hay animales ocultos moviéndose entre las dunas.</label></div>
+            <div><input type="radio" id="q11b" name="q11" value="b"><label for="q11b">b) Que el ambiente parece tener vida propia.</label></div>
+            <div><input type="radio" id="q11c" name="q11" value="c"><label for="q11c">c) Que las lunas están demasiado bajas.</label></div>
+            <div><input type="radio" id="q11d" name="q11" value="d"><label for="q11d">d) Que las sombras pertenecen a viajeros anteriores.</label></div>
+        </div>
+
+        <!-- FRAGMENTO 2 -->
+        <div class="fragmento" style="display:none;">
+            En un oasis escondido, encuentran a un anciano envuelto en telas azules.  
+            Su voz suena antigua, como si cargara siglos de memoria.  
+            Les ofrece un acertijo: “Lo que compartes crece, lo que ocultas se marchita”.  
+            Lía murmura: “El conocimiento”.
+        </div>
+
+        <div class="question" style="display:none;">
+            <p>12) ¿Qué da a entender la descripción del anciano?</p>
+            <div><input type="radio" id="q12a" name="q12" value="a"><label for="q12a">a) Que es simplemente un viajero más.</label></div>
+            <div><input type="radio" id="q12b" name="q12" value="b"><label for="q12b">b) Que posee sabiduría acumulada durante mucho tiempo.</label></div>
+            <div><input type="radio" id="q12c" name="q12" value="c"><label for="q12c">c) Que es demasiado joven para ser fiable.</label></div>
+            <div><input type="radio" id="q12d" name="q12" value="d"><label for="q12d">d) Que está buscando ayuda urgente.</label></div>
+        </div>
+
+        <!-- FRAGMENTO 3 -->
+        <div class="fragmento" style="display:none;">
+            Siguiendo la brújula, llegan a un castillo suspendido sobre el vacío.  
+            Al tomar sus manos, los puentes invisibles comienzan a formar patrones luminosos,  
+            como si reconocieran la unión de ambos antes de permitirles avanzar.
+        </div>
+
+        <div class="question" style="display:none;">
+            <p>13) ¿Qué simboliza la formación de los puentes al tomar las manos?</p>
+            <div><input type="radio" id="q13a" name="q13" value="a"><label for="q13a">a) La necesidad de confiar el uno en el otro.</label></div>
+            <div><input type="radio" id="q13b" name="q13" value="b"><label for="q13b">b) Que los puentes reaccionan a la luz de las lunas.</label></div>
+            <div><input type="radio" id="q13c" name="q13" value="c"><label for="q13c">c) Que el castillo está activado por magia oscura.</label></div>
+            <div><input type="radio" id="q13d" name="q13" value="d"><label for="q13d">d) Que los puentes son trampas que se activan con movimiento.</label></div>
+        </div>
+
+        <!-- FRAGMENTO 4 -->
+        <div class="fragmento" style="display:none;">
+            Dentro del castillo, un reloj colosal cae desde el techo sin romperse.  
+            Sus agujas retroceden y avanzan a la vez, como si el tiempo dudara de sí mismo.  
+            Lía declara con determinación: “Este es el punto donde todo cambia”.
+        </div>
+
+        <div class="question" style="display:none;">
+            <p>14) ¿Qué transmite la frase de Lía?</p>
+            <div><input type="radio" id="q14a" name="q14" value="a"><label for="q14a">a) Resolución y seguridad en su intuición.</label></div>
+            <div><input type="radio" id="q14b" name="q14" value="b"><label for="q14b">b) Miedo y duda sobre cómo actuar.</label></div>
+            <div><input type="radio" id="q14c" name="q14" value="c"><label for="q14c">c) Desconfianza hacia Tomás.</label></div>
+            <div><input type="radio" id="q14d" name="q14" value="d"><label for="q14d">d) Impaciencia por salir del castillo.</label></div>
+        </div>
+
+        <!-- FRAGMENTO 5 -->
+        <div class="fragmento" style="display:none;">
+            Una voz profunda, casi etérea, retumba por los pasillos:  
+            “Quien cambia su ruta pierde aquello que aún no ha encontrado”.  
+            Tomás aprieta la brújula. Comprende que desviarse significaría perderlo todo.
+        </div>
+
+        <div class="question" style="display:none;">
+            <p>15) ¿Cuál es el mensaje principal del último fragmento?</p>
+            <div><input type="radio" id="q15a" name="q15" value="a"><label for="q15a">a) La importancia de mantenerse fiel al camino elegido.</label></div>
+            <div><input type="radio" id="q15b" name="q15" value="b"><label for="q15b">b) Que deben caminar más rápido.</label></div>
+            <div><input type="radio" id="q15c" name="q15" value="c"><label for="q15c">c) Que el castillo está cambiando de forma.</label></div>
+            <div><input type="radio" id="q15d" name="q15" value="d"><label for="q15d">d) Que deben abandonar la misión.</label></div>
+        </div>
+
+    </div>
+
+    <div id="feedback" class="text-center mt-3"></div>
+
+    <button class="btn-custom" id="sendButton" onclick="evaluateCurrentQuestion()">Enviar Respuesta</button>
+    <button class="btn-custom" id="retryButton" style="display:none;" onclick="resetQuiz()">Reintentar</button>
+
+</div>
+
+<footer>
+    <p>&copy; 2024 Lectura Pro. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+    const correctAnswers = ['b','b','a','a','a'];
+    let currentIndex = 0;
+
+    const fragments = document.querySelectorAll('.fragmento');
+    const questions = document.querySelectorAll('.question');
+
+    function hideAll() {
+        fragments.forEach(f => f.style.display = 'none');
+        questions.forEach(q => q.style.display = 'none');
+    }
+
+    hideAll();
+    fragments[0].style.display = 'block';
+    questions[0].style.display = 'block';
+
+    function evaluateCurrentQuestion() {
+        const currentQuestion = questions[currentIndex];
+        const selected = currentQuestion.querySelector('input[type="radio"]:checked');
+
+        if (!selected) {
+            alert("Por favor selecciona una respuesta.");
+            return;
+        }
+
+        const feedback = document.getElementById('feedback');
+        feedback.innerHTML =
+            selected.value === correctAnswers[currentIndex]
+            ? "<span style='color:green;'>✔ Correcto</span>"
+            : "<span style='color:red;'>✘ Incorrecto</span>";
+
+        setTimeout(() => {
+            feedback.innerHTML = "";
+            questions[currentIndex].style.display = "none";
+            fragments[currentIndex].style.display = "none";
+            currentIndex++;
+
+            if (currentIndex < questions.length) {
+                fragments[currentIndex].style.display = "block";
+                questions[currentIndex].style.display = "block";
+            } else finishQuiz();
+
+        }, 1200);
+    }
+
+    function finishQuiz() {
+        window.location.href = "{% url 'oro1' %}";
+    }
+
+    function resetQuiz() {
+        location.reload();
+    }
+</script>
+
+</body>
+</html>

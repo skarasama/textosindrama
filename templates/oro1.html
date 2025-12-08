@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medalla de Oro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url("{% static 'imagenes/celebracion.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #2b3d52; 
+        flex: 1;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(90deg, #6ec1e4, #2980b9);
+            padding: 1em 0;
+            position: static;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar a {
+            color: #eaf6fb !important;
+            text-decoration: none;
+            margin: 0 1em;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #ffffff !important;
+            text-shadow: 0 0 6px rgba(255,255,255,0.7);
+        }
+
+        /* Contenedor */
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2em;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            max-width: 900px;
+            margin: 3em auto;
+        }
+
+        h1 { color: #2980b9; font-weight: bold; }
+        h3 { color: #2b3d52; }
+
+        /* Medalla animada */
+        .medalla-container {
+            position: relative;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        .medalla-container img {
+            width: 220px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .shine {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(205,127,50,0.6) 0%, transparent 70%);
+            animation: rotateShine 6s linear infinite;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        /* Animaciones */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        @keyframes rotateShine {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .btn-custom {
+            background: #6ec1e4;
+            color: #fff;
+            padding: 0.7em 1.5em;
+            border-radius: 8px;
+            border: none;
+            transition: 0.3s;
+        }
+        .btn-custom:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            width: 100%;
+            position:static;
+            bottom: 0;
+            background-color: #000000;
+            color: #2980b9;
+            padding: 1em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Texto sin Drama</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Ejercicios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Quizzes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Perfil</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Cerrar Sesión</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'ingresoUsuarios' %}">Registrarse</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="container_feedback" class="container mt-5 text-center">
+        <h1>¡Felicidades!</h1>
+        <p>Has obtenido la <strong>medalla de oro</strong> por tu excelente desempeño.</p>
+        
+        <!-- Medalla con animación -->
+        <div class="medalla-container my-3">
+            <div class="shine"></div>
+            <img src="{% static 'imagenes/medalla1.png' %}" alt="Medalla de Oro">
+        </div>
+        
+        <h3 class="text-center mb-4">Pulsa el botón para volver a los quizzes</h3>
+        <a href="{% url 'listaQuiz' %}" class="btn btn-custom mt-4">Volver a los Quizzes</a>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Lectura Pro. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

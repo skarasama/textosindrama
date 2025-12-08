@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Quizzes - Lectura Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url("{% static 'imagenes/humanos.png' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #2b3d52;
+            flex: 1;
+        }
+
+        /* 🔹 Navbar */
+        .navbar {
+            background: linear-gradient(90deg, #6ec1e4, #2980b9);
+            color: #fff;
+            padding: 1em 0;
+        }
+
+        .navbar a {
+            color: #eaf6fb !important;
+            text-decoration: none;
+            margin: 0 1em;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #ffffff !important;
+            text-shadow: 0 0 6px rgba(255,255,255,0.7);
+        }
+
+        /* 🔹 Contenedor principal */
+        .container {
+            background: rgba(239, 247, 255, 0.92);
+            padding: 2em;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            max-width: 950px; /* más compacto */
+            margin: 2em auto;
+        }
+        h2 {
+            color: #2980b9;
+            font-weight: bold;
+            font-size: 1.8em;
+        }
+
+        /* 🔹 Quiz Cards (más compactas) */
+        .quiz-card {
+            background: #f9fcff;
+            padding: 1em 1.2em;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            margin-bottom: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .quiz-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 16px rgba(0,0,0,0.12);
+        }
+        .quiz-title {
+            font-size: 1.2em; /* reducido */
+            font-weight: 600;
+            color: #2980b9;
+            margin: 0;
+        }
+        .quiz-description {
+            font-size: 0.95em;
+            color: #2b3d52;
+            margin-top: 0.3em;
+        }
+
+        /* 🔹 Botón */
+        .btn-start-quiz {
+            font-size: 0.9em; /* más chico */
+            background-color: #6ec1e4;
+            color: white;
+            padding: 0.5em 1.2em;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            font-weight: 500;
+        }
+        .btn-start-quiz:hover {
+            background-color: #5aaed1;
+            box-shadow: 0 3px 10px rgba(110,193,228,0.5);
+        }
+
+        /* 🔹 Footer */
+        footer {
+            width: 100%;
+            position:static;
+            bottom: 0;
+            background-color: #000000;
+            color: #2980b9;
+            padding: 1em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 🔹 Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Texto sin Drama</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Ejercicios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Quizzes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Perfil</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Cerrar Sesión</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'ingresoUsuarios' %}">Registrarse</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 🔹 Lista de quizzes -->
+    <div class="container">
+        <h2 class="text-center mb-4">Lista de Quizzes</h2>
+
+        <div class="quiz-card">
+            <div class="quiz-details">
+                <h3 class="quiz-title">Nivel Básico</h3>
+                <p class="quiz-description">Explora las bases de la comprensión lectora con una narrativa intrigante y preguntas simples.</p>
+            </div>
+            <a href="{% url 'quizBasica1' %}" class="btn btn-start-quiz">Empezar Quiz</a>
+        </div>
+
+        <div class="quiz-card">
+            <div class="quiz-details">
+                <h3 class="quiz-title">Nivel Intermedio</h3>
+                <p class="quiz-description">Aumenta el desafío</p>
+            </div>
+            <a href="{% url 'quizBasica2' %}" class="btn btn-start-quiz">Empezar Quiz</a>
+        </div>
+
+        <div class="quiz-card">
+            <div class="quiz-details">
+                <h3 class="quiz-title">Nivel Avanzado</h3>
+                <p class="quiz-description">Pon a prueba tu conocimiento en gramática y vocabulario con un enfoque dinámico y retador.</p>
+            </div>
+            <a href="{% url 'quizBasica3' %}" class="btn btn-start-quiz">Empezar Quiz</a>
+        </div>
+
+        <div class="quiz-card">
+            <div class="quiz-details">
+                <h3 class="quiz-title">Nivel Final</h3>
+                <p class="quiz-description">Enfréntate al desafío final</p>
+            </div>
+            <a href="{% url 'quizBasica4' %}" class="btn btn-start-quiz">Empezar Quiz</a>
+        </div>
+    </div>
+
+    <!-- 🔹 Footer -->
+    <footer>
+        <p>&copy; 2025 Lectura Pro. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

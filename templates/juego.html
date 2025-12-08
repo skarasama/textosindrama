@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caza-Palabras Clave</title>
+
+<style>
+    body {
+        background: #0d0d0d;
+        color: #fff;
+        font-family: "Segoe UI", sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        text-align: center;
+        margin-top: 20px;
+        text-shadow: 0 0 10px #00c6ff;
+    }
+
+    .text-box {
+        width: 80%;
+        margin: 20px auto;
+        background: rgba(255,255,255,0.05);
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #333;
+    }
+
+    #start-btn {
+        display: block;
+        margin: 10px auto;
+        padding: 10px 20px;
+        background: #00aaff;
+        border: none;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    #start-btn:hover {
+        background: #0088cc;
+    }
+
+    #game-area {
+        width: 100%;
+        height: 350px;
+        position: relative;
+        overflow: hidden;
+        border-top: 1px solid #222;
+        border-bottom: 1px solid #222;
+        margin-top: 20px;
+    }
+
+    .word {
+        position: absolute;
+        padding: 5px 10px;
+        background: #111;
+        border-radius: 5px;
+        border: 1px solid #444;
+        cursor: pointer;
+        user-select: none;
+        transition: 0.1s;
+        font-size: 1.1rem;
+    }
+
+    .word.good { color: #00ff7f; }
+    .word.bad { color: #ff4444; }
+
+    #score, #timer {
+        text-align: center;
+        font-size: 1.4rem;
+    }
+
+    #game-over {
+        text-align: center;
+        margin-top: 20px;
+        display: none;
+    }
+</style>
+
+</head>
+<body>
+
+<h1>🔍 Caza-Palabras Clave</h1>
+
+<div class="text-box">
+    <p id="reading-text">
+        “En un futuro distante, los estudiantes del Liceo Horizonte descubren una sala secreta
+        donde se esconde un antiguo dispositivo capaz de mostrar fragmentos perdidos de la historia.
+        Para activarlo, deben demostrar que comprenden correctamente cada texto que aparece.”
+    </p>
+</div>
+
+<div id="score">Puntaje: 0</div>
+<div id="timer">Tiempo: 20</div>
+
+<button id="start-btn">Iniciar Desafío</button>
+
+<div id="game-area"></div>
+
+<div id="game-over"></div>
+
+<script>
+    const readingText = document.getElementById("reading-text").innerText
+        .toLowerCase()
+        .replace(/[.,]/g, "");
+
+    const correctWords = readingText.split(" ");
+
+    const distractionWords = [
+        "planeta","dragon","matematicas","futbol","oscuro","laboratorio",
+        "dimension","telefono","profesor","tormenta","guardian","criatura",
+        "mapache","sistema","invierno","computadora"
+    ];
+
+    const gameArea = document.getElementById("game-area");
+    const scoreText = document.getElementById("score");
+    const timerText = document.getElementById("timer");
+    const startBtn = document.getElementById("start-btn");
+    const gameOver = document.getElementById("game-over");
+
+    let score = 0;
+    let timeLeft = 20;
+    let spawnInterval;
+    let timerInterval;
+
+    function spawnWord() {
+        const word = document.createElement("div");
+        word.classList.add("word");
+
+        const isCorrect = Math.random() < 0.5; 
+        let text = "";
+
+        if (isCorrect) {
+            text = correctWords[Math.floor(Math.random() * correctWords.length)];
+            word.classList.add("good");
+        } else {
+            text = distractionWords[Math.floor(Math.random() * distractionWords.length)];
+            word.classList.add("bad");
+        }
+
+        word.textContent = text;
+
+        word.style.left = Math.random() * (gameArea.offsetWidth - 100) + "px";
+        word.style.top = Math.random() * (gameArea.offsetHeight - 40) + "px";
+
+        word.addEventListener("click", () => {
+            if (word.classList.contains("good")) {
+                score++;
+                word.style.transform = "scale(1.3)";
+            } else {
+                score--;
+                word.style.transform = "scale(0.6)";
+            }
+
+            scoreText.textContent = "Puntaje: " + score;
+            setTimeout(() => word.remove(), 100);
+        });
+
+        gameArea.appendChild(word);
+
+        setTimeout(() => {
+            if (word.parentNode) word.remove();
+        }, 1200);
+    }
+
+    function startGame() {
+        score = 0;
+        timeLeft = 20;
+        scoreText.textContent = "Puntaje: 0";
+        timerText.textContent = "Tiempo: 20";
+        gameOver.style.display = "none";
+        startBtn.style.display = "none";
+
+        spawnInterval = setInterval(spawnWord, 400);
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerText.textContent = "Tiempo: " + timeLeft;
+
+            if (timeLeft <= 0) endGame();
+        }, 1000);
+    }
+
+    function endGame() {
+        clearInterval(spawnInterval);
+        clearInterval(timerInterval);
+        gameArea.innerHTML = "";
+
+        gameOver.style.display = "block";
+        gameOver.innerHTML = `
+            <p>📘 Desafío terminado</p>
+            <p><strong>Puntaje final: ${score}</strong></p>
+            <button onclick="startGame()">Jugar otra vez</button>
+        `;
+
+        startBtn.style.display = "block";
+    }
+
+    startBtn.addEventListener("click", startGame);
+</script>
+
+</body>
+</html>

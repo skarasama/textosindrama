@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos y Condiciones | Texto sin Drama</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* 🌐 Global */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0f8ff;
+            color: #2b3d52;
+            line-height: 1.6;
+        }
+
+        /* 🔹 Navbar */
+        .navbar {
+            background: linear-gradient(90deg, #6ec1e4, #2980b9);
+            padding: 1em 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .navbar a {
+            color: #eaf6fb !important;
+            margin: 0 0.8em;
+            font-weight: 500;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .navbar a:hover {
+            color: #ffffff !important;
+            text-shadow: 0 0 6px rgba(255,255,255,0.7);
+        }
+
+        /* 🔹 Header */
+        .header {
+            text-align: center;
+            padding: 4em 1em;
+            background: url("https://img.freepik.com/fotos-premium/flores-azuis-em-um-fundo-branco_881695-1209.jpg?w=2000") no-repeat center center;
+            background-size: cover;
+            border-radius: 0 0 25px 25px;
+            color: #fff;
+            position: relative;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(41,128,185,0.7);
+            border-radius: 0 0 25px 25px;
+            z-index: 0;
+        }
+
+        .header h1 {
+            position: relative;
+            z-index: 1;
+            font-size: 2.8rem;
+            text-shadow: 0 0 8px rgba(0,0,0,0.6);
+        }
+
+        /* 🔹 Contenido */
+        .terms-container {
+            max-width: 1000px;
+            margin: 3em auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            padding: 2.5em;
+        }
+
+        .terms-container h2 {
+            color: #2980b9;
+            font-size: 1.8em;
+            margin-top: 1.5em;
+        }
+
+        .terms-container p {
+            color: #34495e;
+            font-size: 1em;
+            margin-bottom: 1.2em;
+        }
+
+        ul {
+            padding-left: 1.5em;
+        }
+
+        ul li {
+            margin-bottom: 0.6em;
+        }
+
+        /* 🔹 Footer */
+        .footer {
+            background: #2980b9;
+            color: #f0f8ff;
+            text-align: center;
+            padding: 1.5em;
+            margin-top: 3em;
+            border-radius: 20px 20px 0 0;
+            font-size: 0.95rem;
+        }
+
+        .btn-back {
+            background: #6ec1e4;
+            color: #fff;
+            padding: 0.8em 1.6em;
+            border: none;
+            border-radius: 8px;
+            margin-top: 1.5em;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            background: #5aaed1;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white fw-bold" href="{% url 'index' %}">Texto sin Drama</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'listaQuiz' %}">Quizzes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 🔹 Header -->
+    <div class="header">
+        <h1>Términos y Condiciones</h1>
+    </div>
+
+    <!-- 🔹 Contenido -->
+    <div class="terms-container">
+        <p>Bienvenido a <strong>Texto sin Drama</strong>. Al acceder y utilizar esta plataforma, usted acepta cumplir los siguientes términos y condiciones. Le recomendamos leerlos detenidamente antes de continuar.</p>
+
+        <h2>1. Aceptación de los Términos</h2>
+        <p>El uso de la plataforma implica la aceptación plena y sin reservas de los presentes términos y condiciones. Si no está de acuerdo, le solicitamos no utilizar nuestros servicios.</p>
+
+        <h2>2. Uso de la Plataforma</h2>
+        <p>El usuario se compromete a utilizar la plataforma únicamente con fines educativos y personales. Queda prohibido:</p>
+        <ul>
+            <li>Utilizar el contenido con fines comerciales sin autorización previa.</li>
+            <li>Intentar vulnerar la seguridad o modificar el código fuente del sistema.</li>
+            <li>Compartir información falsa o suplantar identidades.</li>
+        </ul>
+
+        <h2>3. Registro de Usuario</h2>
+        <p>Para acceder a determinadas funciones (como el seguimiento de progreso o los quizzes personalizados), el usuario deberá registrarse proporcionando información veraz y actualizada. El usuario es responsable de mantener la confidencialidad de sus credenciales.</p>
+
+        <h2>4. Propiedad Intelectual</h2>
+        <p>Todo el contenido disponible en <strong>Texto sin Drama</strong> (textos, ilustraciones, código, logotipos, audios y diseño) está protegido por derechos de autor. Su reproducción total o parcial sin autorización está estrictamente prohibida.</p>
+
+        <h2>5. Privacidad y Protección de Datos</h2>
+        <p>Respetamos su privacidad. Los datos personales proporcionados serán tratados conforme a nuestra <a href="{% url 'politica_privacidad' %}">Política de Privacidad</a>, utilizada únicamente para fines de funcionamiento interno de la plataforma.</p>
+
+        <h2>6. Limitación de Responsabilidad</h2>
+        <p>Texto sin Drama no se responsabiliza por interrupciones temporales del servicio, pérdida de datos ocasionada por terceros o errores derivados de la conexión del usuario.</p>
+
+        <h2>7. Modificaciones</h2>
+        <p>Nos reservamos el derecho de modificar en cualquier momento estos términos, notificando los cambios en la misma página. La versión más reciente sustituirá a las anteriores.</p>
+
+        <h2>8. Contacto</h2>
+        <p>Si tiene dudas o comentarios sobre estos términos, puede comunicarse con nosotros a través de nuestro formulario de contacto o al correo: <strong>contacto@textosindrama.cl</strong>.</p>
+
+        <div class="text-center">
+            <a href="{% url 'index' %}" class="btn-back">Volver al inicio</a>
+        </div>
+    </div>
+
+    <!-- 🔹 Footer -->
+    <footer class="footer">
+        <p>© 2025 Texto sin Drama. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>
