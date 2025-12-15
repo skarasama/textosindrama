@@ -1,115 +1,748 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Detective de Lectura</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Caza-Palabras Clave</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f2f2f2;
-        padding: 20px;
-    }
-    .card {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        width: 600px;
-        margin: auto;
-        box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-    }
-    button {
-        background: #4CAF50;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 6px;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-    button:hover {
-        background: #45a049;
-    }
-    #resultado {
-        font-weight: bold;
-        margin-top: 15px;
-    }
+:root{
+  --bg:#0d0d0d; --panel:rgba(255,255,255,0.04); --accent:#00aaff; --muted:#9aa0a6;
+  --glow:#00c6ff; --success:#00ff7f; --danger:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:#fff; font-family:Inter, "Segoe UI", Roboto, sans-serif;
+  margin:0; padding:18px; -webkit-font-smoothing:antialiased;
+}
+.header{
+  display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+}
+h1{margin:0;font-size:1.4rem;text-shadow:0 0 12px var(--glow);}
+.container{max-width:1100px;margin:16px auto;}
+.panel{background:var(--panel); border:1px solid #222; padding:12px; border-radius:10px;}
+.top-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.pill{background:#0b0b0b;padding:8px 12px;border-radius:999px;border:1px solid #161616;font-weight:600}
+.btn{
+  background:var(--accent); color:#012; padding:8px 12px; border-radius:8px; border:none; font-weight:800; cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,0.6);
+}
+.btn.secondary{background:#111;color:#fff;border:1px solid #222}
+.row{display:flex;gap:12px;align-items:center;}
+.col{flex:1}
+.small{font-size:0.85rem;color:var(--muted)}
+.text-box{padding:14px;border-radius:8px;margin-top:12px;border:1px solid #222}
+#game-area{
+  margin-top:14px; height:380px; border-radius:8px; position:relative; overflow:hidden; background:
+  linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); border:1px solid #1a1a1a;
+}
+.word{
+  position:absolute;padding:6px 10px;border-radius:6px;border:1px solid #292929;background:#111;
+  font-weight:700; cursor:pointer; user-select:none; white-space:nowrap; color:#fff; /* TODAS IGUALES */
+  transition:transform .12s, opacity .18s;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+.word.selected{transform:scale(1.05);opacity:0.9}
+  .bad{ /* semantic, not visual */ }
+  .good{ /* semantic, not visual */ }
+
+.statusbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px;}
+.status-left{display:flex;gap:8px;align-items:center}
+#score,#timer,#mission-pill{font-weight:800;padding:8px 12px;border-radius:8px;background:#0b0b0b;border:1px solid #161616}
+#leaderboard{margin-top:12px;padding:12px;border-radius:8px;background:#080808;border:1px solid #222}
+
+.feedback{margin-top:12px;padding:12px;border-radius:8px;background:#070707;border:1px solid #1a1a1a;display:none}
+.result-medal{font-size:2.6rem;margin:8px 0;text-align:center}
+.controls-bottom{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;align-items:center}
+
+/* Animación suave de movimiento (usada por JS toggles) */
+@keyframes float-x {
+  0% {transform: translateY(0) translateX(0)}
+  50% {transform: translateY(-6px) translateX(6px)}
+  100% {transform: translateY(0) translateX(0)}
+}
+.word.float { animation: float-x 3s ease-in-out infinite; }
+
+/* Responsive */
+@media (max-width:820px){
+  .header{flex-direction:column;align-items:flex-start;gap:8px}
+  #game-area{height:300px}
+}
 </style>
 </head>
-
 <body>
-<div class="card">
-    <h2>🔍 Detective de Lectura</h2>
-    <p id="texto"></p>
+<div class="container">
+  <div class="header">
+    <h1>🔍 Caza-Palabras Clave</h1>
+  </div>
 
-    <h3>Pregunta:</h3>
-    <p id="pregunta"></p>
+  <div class="panel top-controls" style="margin-top:12px;">
+    <div style="flex:1">
+      <div class="small">Texto actual (puedes pegar otro abajo):</div>
+      <div class="text-box panel" id="text-source">
+        <p id="reading-text">“En un futuro distante, los estudiantes del Liceo Horizonte descubren una sala secreta
+        donde se esconde un antiguo dispositivo capaz de mostrar fragmentos perdidos de la historia.
+        Para activarlo, deben demostrar que comprenden correctamente cada texto que aparece.”</p>
+      </div>
+    </div>
 
-    <div id="opciones"></div>
+    <div style="width:320px">
+      <div class="small">Configuración rápida</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button id="start-btn" class="btn">🔫 Iniciar Desafío</button>
+        <button id="stop-btn" class="btn secondary">■ Parar</button>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <div class="pill" id="score">Puntaje: 0</div>
+        <div class="pill" id="timer">Tiempo: 20s</div>
+      </div>
 
-    <p id="resultado"></p>
-    <p>Puntaje: <span id="puntos">0</span></p>
-    <button onclick="nuevaRonda()">Nueva ronda</button>
+      <div style="margin-top:10px" class="small">Misión activa:</div>
+      <div id="mission-pill" class="pill">—</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px;align-items:flex-start;margin-top:12px;flex-wrap:wrap">
+    <div style="flex:1;min-width:300px">
+      <div id="game-area" class="panel"></div>
+
+      <div class="controls-bottom">
+        <button id="hint-btn" class="btn secondary">💡 Mostrar Pistas</button>
+        <button id="powerup-time" class="btn secondary">⏱️ Comprar +5s (20 pts)</button>
+        <button id="powerup-mult" class="btn secondary">⚡ Multiplicador x2 (30 pts)</button>
+        <div class="small" style="margin-left:auto">Spawn dinámico y palabras en movimiento ✔</div>
+      </div>
+
+      <div id="feedback" class="feedback"></div>
+    </div>
+
+    <div style="width:360px">
+      <div class="panel">
+        <div class="small">Editar texto / subir tu propio párrafo</div>
+        <textarea id="custom-text" style="width:100%;height:120px;margin-top:8px;background:#070707;border:1px solid #222;color:#fff;padding:8px;border-radius:6px" placeholder="Pega aquí tu texto..."></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="load-text" class="btn">📥 Cargar texto</button>
+          <button id="reset-text" class="btn secondary">🔁 Reset</button>
+        </div>
+
+        <div id="leaderboard" style="margin-top:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="small">🏆 Mejores puntajes (local)</div>
+            <button id="clear-scores" class="btn secondary" style="font-size:0.85rem">🧹 Limpiar</button>
+          </div>
+          <ol id="scores-list" style="margin-top:8px;padding-left:18px"></ol>
+        </div>
+
+        <div style="margin-top:10px" class="small">Ajustes:</div>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+          <label class="small">Tiempo base:
+            <input id="base-time" type="number" value="20" style="width:70px;margin-left:6px"/>
+          </label>
+          <label class="small">Dificultad:
+            <select id="difficulty" style="margin-left:6px">
+              <option value="easy">Fácil</option>
+              <option value="normal" selected>Normal</option>
+              <option value="hard">Difícil</option>
+            </select>
+          </label>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-const rondas = [
-    {
-        texto: "Ana encontró un perro perdido en el parque. El animal tenía una placa con un número. Ella llamó y el dueño llegó agradecido.",
-        pregunta: "¿Qué hizo Ana cuando encontró al perro?",
-        opciones: ["Lo llevó a su casa", "Llamó al dueño", "Lo dejó en el parque"],
-        correcta: 1
-    },
-    {
-        texto: "Tomás estudió toda la noche para la prueba. Aunque estaba cansado, logró concentrarse y obtuvo una excelente nota.",
-        pregunta: "¿Por qué obtuvo una buena nota Tomás?",
-        opciones: ["Porque estudió mucho", "Porque copió", "Porque la prueba era fácil"],
-        correcta: 0
-    },
-    {
-        texto: "En el museo, Sofía observó un cuadro muy antiguo. La guía explicó que tenía más de 500 años y pertenecía a un rey.",
-        pregunta: "¿Qué explicó la guía?",
-        opciones: ["Que el cuadro era moderno", "Que el cuadro pertenecía a un rey", "Que el cuadro estaba en mal estado"],
-        correcta: 1
+/* ============================
+   Juego COMPLETO: variables
+   ============================ */
+const readingTextElem = document.getElementById('reading-text');
+const gameArea = document.getElementById('game-area');
+const startBtn = document.getElementById('start-btn');
+const stopBtn = document.getElementById('stop-btn');
+const scorePill = document.getElementById('score');
+const timerPill = document.getElementById('timer');
+const missionPill = document.getElementById('mission-pill');
+const hintBtn = document.getElementById('hint-btn');
+const feedback = document.getElementById('feedback');
+const customText = document.getElementById('custom-text');
+const loadTextBtn = document.getElementById('load-text');
+const resetTextBtn = document.getElementById('reset-text');
+const baseTimeInput = document.getElementById('base-time');
+const difficultySelect = document.getElementById('difficulty');
+const powerupTimeBtn = document.getElementById('powerup-time');
+const powerupMultBtn = document.getElementById('powerup-mult');
+const scoresList = document.getElementById('scores-list');
+const clearScoresBtn = document.getElementById('clear-scores');
+
+let spawnInterval = null, timerInterval = null, difficultyMultiplier = 1;
+let score = 0, timeLeft = 20, baseTime = 20;
+let currentMission = null;
+let spawned = []; // DOM nodes
+let selectedSet = new Set();
+let multiplierActive = false;
+let multiplierTimeout = null;
+
+/* ------------- audio via WebAudio (small helper) ------------- */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function beep(freq=440, duration=0.08, type='sine', gain=0.12) {
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.value = gain;
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start();
+  setTimeout(()=>{ o.stop(); }, duration*1000);
+}
+
+/* ============================
+   Texto y categorías
+   ============================ */
+function normalizeText(txt){
+  return txt.replace(/[“”"()—…?¡!;:]/g,' ').replace(/[.,]/g,'').toLowerCase().trim();
+}
+let originalText = readingTextElem.innerText;
+
+function buildWordLists(text){
+  const normalized = normalizeText(text);
+  const allWords = Array.from(new Set(normalized.split(/\s+/).filter(w=>w.length>1)));
+  return {allWords,normalized};
+}
+
+/* manual categories + heurísticas (pulibles) */
+function buildCategories(allWords){
+  // Base manual mapping tuned to the default text (se adapta si no hay matches)
+  const manual = {
+    personajes: ['estudiantes','estudiante'],
+    objetos: ['dispositivo','fragmentos','texto','historia'],
+    lugares: ['sala','liceo','horizonte'],
+    acciones: ['descubren','esconde','mostrar','activar','comprenden'],
+    conceptos: ['futuro','secreto','antiguo','perdidos']
+  };
+  // Filtrar por existencia en allWords
+  for(const k in manual) manual[k]=manual[k].filter(w=>allWords.includes(w));
+  // heurística fallback — palabras que contienen raíces
+  const heur = {
+    personajes:w=>/estudiant|persona|persona/.test(w),
+    objetos:w=>/disposit|fragment|objeto|texto|historia/.test(w),
+    lugares:w=>/sala|liceo|horizonte|ciudad|lugar/.test(w),
+    acciones:w=>/(descubr|mostrar|activa|activar|demostr|comprend)/.test(w),
+    conceptos:w=>/futuro|secreto|antiguo|perdidos|concepto|idea/.test(w)
+  };
+  for(const k in manual){
+    if(manual[k].length===0){
+      manual[k] = allWords.filter(heur[k]);
     }
+    if(manual[k].length===0){
+      manual[k] = allWords.slice(0, Math.min(3, allWords.length));
+    }
+  }
+  return manual;
+}
+
+/* ============================
+   Misiones
+   ============================ */
+function buildMissions(categories){
+  return [
+    {id:'personajes', title:'Encuentra PERSONAJES del fragmento', explanation:'Busca nombres o referencias a quienes actúan en el texto.'},
+    {id:'objetos', title:'Encuentra OBJETOS importantes', explanation:'Identifica objetos concretos o elementos físicos mencionados.'},
+    {id:'lugares', title:'Encuentra LUGARES mencionados', explanation:'Nombres o referencias a sitios o espacios.'},
+    {id:'acciones', title:'Encuentra ACCIONES clave', explanation:'Verbos o acciones que describen lo que ocurre.'},
+    {id:'conceptos', title:'Encuentra CONCEPTOS importantes', explanation:'Palabras que resumen ideas o temas centrales.'}
+  ].map(m=>{
+    // asignar lista concreta
+    m.words = categories[m.id] || [];
+    return m;
+  });
+}
+
+/* ============================
+   Estado actual del texto y misiones
+   ============================ */
+let currentAllWords = [], currentCategories = {}, missions = [];
+
+function loadText(text){
+  originalText = text;
+  readingTextElem.innerText = text;
+  const built = buildWordLists(text);
+  currentAllWords = built.allWords;
+  currentCategories = buildCategories(currentAllWords);
+  missions = buildMissions(currentCategories);
+  showIntroMission();
+}
+
+/* cargar texto por defecto */
+loadText(originalText);
+
+/* ============================
+   Spawn / palabra lógica
+   - tipos: target (correct), distractor (wrong), bomb, double
+   ============================ */
+const DISTRACTION_POOL = [
+  "planeta","dragón","matemáticas","fútbol","oscuro","laboratorio",
+  "dimensión","teléfono","tormenta","guardián","criatura","mapache",
+  "sistema","invierno","computadora","elefante","misterio","bosque"
 ];
 
-let puntos = 0;
-let actual = 0;
+function pickFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-function nuevaRonda() {
-    const indice = Math.floor(Math.random() * rondas.length);
-    actual = indice;
-
-    const r = rondas[indice];
-    document.getElementById("texto").innerText = r.texto;
-    document.getElementById("pregunta").innerText = r.pregunta;
-
-    const opcionesDiv = document.getElementById("opciones");
-    opcionesDiv.innerHTML = "";
-
-    r.opciones.forEach((op, i) => {
-        let btn = document.createElement("button");
-        btn.innerText = op;
-        btn.onclick = () => responder(i);
-        opcionesDiv.appendChild(btn);
-    });
-
-    document.getElementById("resultado").innerText = "";
+function chooseMission(){
+  currentMission = pickFrom(missions);
+  missionPill.textContent = currentMission.title;
 }
 
-function responder(i) {
-    const r = rondas[actual];
-    if (i === r.correcta) {
-        puntos++;
-        document.getElementById("resultado").innerText = "✔ ¡Correcto!";
+/* determine spawn distribution based on difficulty */
+function getSpawnConfig(){
+  const diff = difficultySelect.value;
+  if(diff==='easy') return {spawnRate:700, lifeMin:1400, lifeMax:2100, bombProb:0.06, doubleProb:0.06, baseTimeMultiplier:1};
+  if(diff==='hard') return {spawnRate:320, lifeMin:900, lifeMax:1600, bombProb:0.14, doubleProb:0.12, baseTimeMultiplier:1.1};
+  return {spawnRate:480, lifeMin:1100, lifeMax:1900, bombProb:0.10, doubleProb:0.08, baseTimeMultiplier:1};
+}
+
+/* spawn a word node */
+function spawnWord(){
+  if(!currentMission) return;
+  const cfg = getSpawnConfig();
+
+  const node = document.createElement('div');
+  node.className = 'word';
+  // choose type
+  const roll = Math.random();
+  let type = 'distractor';
+  let text = '';
+  // make target relatively common but not certain
+  if(roll < 0.45 && currentMission.words.length>0){
+    type = 'target';
+    text = pickFrom(currentMission.words);
+    node.classList.add('good');
+  } else if(roll < 0.45 + cfg.bombProb){
+    type = 'bomb';
+    text = pickFrom(DISTRACTION_POOL);
+    node.classList.add('bad');
+  } else if(roll < 0.45 + cfg.bombProb + cfg.doubleProb){
+    type = 'double';
+    // pick a word that's plausible distractor or target
+    if(Math.random()<0.6 && currentMission.words.length>0) text = pickFrom(currentMission.words);
+    else text = pickFrom(currentAllWords.concat(DISTRACTION_POOL));
+    node.classList.add('good');
+  } else {
+    type = 'distractor';
+    // choose distractor from pool but ensure not exact same as target list
+    const distracts = DISTRACTION_POOL.concat(currentAllWords.filter(w=>!currentMission.words.includes(w)));
+    text = pickFrom(distracts);
+    node.classList.add('bad');
+  }
+
+  node.dataset.type = type;
+  node.textContent = text;
+
+  // position maths
+  const pad = 8;
+  const w = gameArea.clientWidth, h = gameArea.clientHeight;
+  const left = Math.random()*(Math.max(1,w-120));
+  const top = Math.random()*(Math.max(1,h-32));
+  node.style.left = left + 'px';
+  node.style.top = top + 'px';
+
+  // small random float animation occasionally
+  if(Math.random() < 0.6) node.classList.add('float');
+
+  // add click behavior
+  node.addEventListener('click', ()=> {
+    if(node.dataset.clicked) return;
+    node.dataset.clicked = '1';
+    node.classList.add('selected');
+
+    // visuals & audio for types
+    if(node.dataset.type === 'target'){
+      // score points
+      const pts = 8 * (multiplierActive ? 2 : 1);
+      score += pts;
+      beep(880,0.07,'sine',0.09);
+      showPopup(node, `+${pts}`);
+      // small pop
+      node.style.transform = 'scale(1.18)';
+    } else if(node.dataset.type === 'double'){
+      // double word: gives more but flagged as target-ish
+      const pts = 14 * (multiplierActive ? 2 : 1);
+      score += pts;
+      beep(1100,0.07,'sawtooth',0.12);
+      showPopup(node, `+${pts} (x2 word)`);
+      node.style.transform = 'scale(1.18)';
+    } else if(node.dataset.type === 'bomb'){
+      // bomb: heavy penalty in time
+      timeLeft = Math.max(0, timeLeft - 6);
+      score = Math.max(0, score - 6);
+      beep(160,0.12,'triangle',0.16);
+      showPopup(node, `-6s`);
+      node.style.transform = 'scale(0.85)';
     } else {
-        document.getElementById("resultado").innerText = "✘ Incorrecto. Intenta otra ronda.";
+      // distractor wrong: small penalty
+      score = Math.max(0, score - 2);
+      beep(240,0.06,'sine',0.08);
+      showPopup(node, `-2`);
+      node.style.transform = 'scale(0.82)';
     }
-    document.getElementById("puntos").innerText = puntos;
+    updateScore();
+
+    // remove node visually after a short delay
+    setTimeout(()=>{ if(node.parentNode) node.remove(); }, 140);
+  });
+
+  gameArea.appendChild(node);
+  spawned.push(node);
+
+  // life timer (disappear)
+  const life = cfg.lifeMin + Math.random()*(cfg.lifeMax-cfg.lifeMin);
+  setTimeout(()=>{ if(node.parentNode) node.remove(); const i=spawned.indexOf(node); if(i>=0)spawned.splice(i,1); }, life);
 }
 
-nuevaRonda();
+/* small floating popup near node */
+function showPopup(node, text){
+  const p = document.createElement('div');
+  p.textContent = text;
+  p.style.position='absolute';
+  p.style.left = node.style.left;
+  p.style.top  = (parseFloat(node.style.top)-22)+'px';
+  p.style.fontWeight='900';
+  p.style.color = '#fff';
+  p.style.background='linear-gradient(90deg, rgba(0,0,0,0.6), rgba(255,255,255,0.02))';
+  p.style.padding='4px 8px';
+  p.style.borderRadius='6px';
+  p.style.pointerEvents='none';
+  p.style.opacity='1';
+  p.style.transition='transform .6s ease, opacity .6s ease';
+  gameArea.appendChild(p);
+  setTimeout(()=>{ p.style.transform='translateY(-12px)'; p.style.opacity='0'; }, 40);
+  setTimeout(()=>{ if(p.parentNode)p.remove(); }, 700);
+}
+
+/* ============================
+   Game control: start / tick / end
+   ============================ */
+function resetState(){
+  clearIntervals();
+  spawned.forEach(n=>n.remove());
+  spawned = [];
+  selectedSet.clear();
+  multiplierActive = false;
+  if(multiplierTimeout) { clearTimeout(multiplierTimeout); multiplierTimeout = null; }
+  feedback.style.display = 'none';
+}
+
+function clearIntervals(){
+  if(spawnInterval) { clearInterval(spawnInterval); spawnInterval = null; }
+  if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function startGame(){
+  // unlock audio context on first user gesture
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+
+  resetState();
+  score = 0;
+  baseTime = parseInt(baseTimeInput.value) || 20;
+  const cfg = getSpawnConfig();
+  timeLeft = Math.max(5, Math.floor(baseTime * cfg.baseTimeMultiplier));
+  updateScore(); updateTimer();
+  chooseMission();
+  // spawn cadence adjusts with difficulty and will accelerate as score increases
+  spawnInterval = setInterval(()=>{ spawnWord(); dynamicDifficultyAdjust(); }, getSpawnConfig().spawnRate);
+  timerInterval = setInterval(()=> {
+    timeLeft--;
+    updateTimer();
+    if(timeLeft <= 0) endGame();
+  }, 1000);
+  startBtn.style.display = 'none';
+  stopBtn.style.display = 'inline-block';
+  beep(640,0.12,'sine',0.12);
+}
+
+function stopGame(){
+  clearIntervals();
+  startBtn.style.display = 'inline-block';
+  stopBtn.style.display = 'none';
+}
+
+/* dynamic difficulty: spawn faster when score increases */
+function dynamicDifficultyAdjust(){
+  // remove excess nodes occasionally to avoid clutter
+  if(spawned.length > 28) {
+    spawned.slice(0,6).forEach(n=>n.remove());
+  }
+  // accelerate spawn rate by adjusting interval: simpler approach - clear + set new interval occasionally
+  if(!spawnInterval) return;
+  const base = getSpawnConfig().spawnRate;
+  // speed up proportional to score (but capped)
+  const speed = Math.max(180, base - Math.min(320, Math.floor(score/3)));
+  // if changed significantly, replace interval
+  // (to avoid frequent clears, only change if difference > 80ms)
+  const currentRate = spawnInterval._rate || base;
+  if(Math.abs(currentRate - speed) > 80){
+    clearInterval(spawnInterval);
+    spawnInterval = setInterval(()=>{ spawnWord(); dynamicDifficultyAdjust(); }, speed);
+    spawnInterval._rate = speed;
+  }
+}
+
+/* endGame: evaluate, bonus, medallas, guardar scores */
+function endGame(){
+  clearIntervals();
+  // evaluate mission completion: count which target words were clicked
+  const clicked = []; const clickedWrong = [];
+  // we tracked clicks by removing dataset.clicked on nodes; however nodes removed exist no more
+  // Approximate by reading score and deriving counts isn't ideal; instead, we record events when clicked.
+  // For simplicity, we will show which target words remained and which were clicked (we can infer via small log)
+  // We'll maintain a click log during runtime to be precise.
+  // But for now: create result summary from available data:
+  const targets = currentMission ? currentMission.words : [];
+  // find which of targets were clicked (search in popup? no). Implement lightweight click log:
+  // ensure we have clickLog (populated by spawn click handlers). We'll add clickLog global.
+  const correctClicked = clickLog.filter(e => e.type === 'target').map(e=>e.word);
+  const wrongClicked = clickLog.filter(e => e.type === 'distractor' || e.type === 'bomb').map(e=>e.word);
+  const uniqueCorrect = Array.from(new Set(correctClicked));
+  const uniqueWrong = Array.from(new Set(wrongClicked));
+  const missed = targets.filter(t => !uniqueCorrect.includes(t));
+
+  // mission completion rule: either all targets found OR >=60% of them
+  const missionComplete = targets.length === 0 ? false : (uniqueCorrect.length >= Math.max(1, Math.floor(targets.length * 0.6)));
+
+  // bonus if missionComplete
+  const BONUS_MISSION = 30;
+  if(missionComplete) { score += BONUS_MISSION; }
+
+  // determine medal thresholds (balanced for expanded scoring)
+  let medal = '📘 Lector Novato';
+  if(score >= 120) medal = '🥇 ORO';
+  else if(score >= 80) medal = '🥈 PLATA';
+  else if(score >= 40) medal = '🥉 BRONCE';
+
+  // Show feedback
+  feedback.style.display = 'block';
+  feedback.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:900;font-size:1.05rem">📘 Resultado final</div>
+        <div class="small">Puntaje final: <strong>${score}</strong> ${missionComplete ? ' (+BONUS misión ' + BONUS_MISSION + ')' : ''}</div>
+        <div class="small" style="margin-top:6px"><strong>Medalla:</strong> ${medal}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="result-medal">${medal.split(' ')[0]}</div>
+      </div>
+    </div>
+
+    <hr style="opacity:.06;margin:10px 0" />
+    <div style="font-weight:700">Explicación de la misión:</div>
+    <div class="small" style="margin-top:6px">${currentMission ? currentMission.explanation : '—'}</div>
+
+    <div style="margin-top:8px" class="small">
+      <strong>Palabras objetivo:</strong> ${targets.join(', ') || '—'}<br/>
+      <strong>Que seleccionaste correctamente:</strong> ${uniqueCorrect.join(', ') || 'Ninguna'}<br/>
+      <strong>Errores / bombas tocadas:</strong> ${uniqueWrong.join(', ') || 'Ninguno'}<br/>
+      <strong>Palabras que no encontraste:</strong> ${missed.join(', ') || '—'}
+    </div>
+  `;
+
+  // record high score: prompt for initials (non-blocking)
+  setTimeout(()=>{ saveScorePrompt(score); }, 250);
+
+  // cleanup
+  startBtn.style.display = 'inline-block';
+  stopBtn.style.display = 'none';
+  beep(480,0.14,'sine',0.12);
+}
+
+/* ============================
+   Score saving + leaderboard
+   ============================ */
+function saveScorePrompt(finalScore){
+  // insert a tiny input inside feedback for name
+  const div = document.createElement('div');
+  div.style.marginTop = '10px';
+  div.innerHTML = `
+    <div class="small">Guardar puntaje: <input id="player-name" placeholder="Tu nombre" style="margin-left:6px;padding:4px;border-radius:6px;background:#070707;border:1px solid #222;color:#fff;width:120px"/> <button id="save-score" class="btn" style="margin-left:6px">Guardar</button></div>
+  `;
+  feedback.appendChild(div);
+  document.getElementById('save-score').addEventListener('click', ()=>{
+    const name = document.getElementById('player-name').value.trim() || 'Anónimo';
+    saveHighScore(name, finalScore);
+    div.remove();
+    updateLeaderboardUI();
+  });
+}
+
+function saveHighScore(name, pts){
+  const key = 'cazapalabras_scores';
+  const arr = JSON.parse(localStorage.getItem(key) || '[]');
+  arr.push({name,pts,date: new Date().toISOString()});
+  arr.sort((a,b)=>b.pts - a.pts);
+  localStorage.setItem(key, JSON.stringify(arr.slice(0,25)));
+}
+
+function updateLeaderboardUI(){
+  const key = 'cazapalabras_scores';
+  const arr = JSON.parse(localStorage.getItem(key) || '[]');
+  scoresList.innerHTML = '';
+  arr.slice(0,8).forEach((s,i)=>{
+    const li = document.createElement('li');
+    li.style.marginBottom = '6px';
+    li.innerHTML = `<strong>${s.name}</strong> — ${s.pts} pts <span class="small" style="color:#777">(${new Date(s.date).toLocaleDateString()})</span>`;
+    scoresList.appendChild(li);
+  });
+}
+
+/* clear */
+clearScoresBtn.addEventListener('click', ()=>{
+  if(!confirm('Limpiar todos los puntajes guardados?')) return;
+  localStorage.removeItem('cazapalabras_scores');
+  updateLeaderboardUI();
+});
+
+/* ============================
+   UI helpers: update timer/score
+   ============================ */
+function updateScore(){ scorePill.textContent = 'Puntaje: ' + score; }
+function updateTimer(){ timerPill.textContent = 'Tiempo: ' + timeLeft + 's'; }
+
+/* ============================
+   Pistas / hint
+   ============================ */
+hintBtn.addEventListener('click', ()=>{
+  if(!currentMission) { alert('Inicia el desafío para ver pistas.'); return; }
+  const hints = currentMission.words.slice();
+  // shuffle & show up to 3
+  for(let i=hints.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [hints[i],hints[j]]=[hints[j],hints[i]]; }
+  alert('Pistas: algunas palabras objetivo son: ' + (hints.slice(0,Math.min(3,hints.length)).join(', ') || '—'));
+  beep(880,0.05,'sine',0.06);
+});
+
+/* ============================
+   Power-ups: cost/activation
+   ============================ */
+powerupTimeBtn.addEventListener('click', ()=>{
+  const cost = 20;
+  if(score < cost){ alert('No tienes puntos suficientes para comprar tiempo extra.'); return; }
+  score -= cost; timeLeft += 5; updateScore(); updateTimer();
+  beep(720,0.08,'sine',0.08);
+  showTopToast('Compraste +5s');
+});
+
+powerupMultBtn.addEventListener('click', ()=>{
+  const cost = 30;
+  if(score < cost){ alert('No tienes puntos suficientes para comprar multiplicador.'); return; }
+  score -= cost; updateScore();
+  activateMultiplier(8); // 8s duration
+  showTopToast('Multiplicador x2 activo 8s');
+});
+
+function activateMultiplier(duration){
+  multiplierActive = true;
+  if(multiplierTimeout) clearTimeout(multiplierTimeout);
+  multiplierTimeout = setTimeout(()=>{ multiplierActive = false; multiplierTimeout = null; showTopToast('Multiplicador finalizado'); }, duration*1000);
+}
+
+/* small top toast */
+function showTopToast(text){
+  const t = document.createElement('div');
+  t.textContent = text;
+  t.style.position='fixed'; t.style.left='50%'; t.style.top='18px';
+  t.style.transform='translateX(-50%)'; t.style.padding='8px 12px'; t.style.background='#0b0b0b';
+  t.style.border='1px solid #222'; t.style.borderRadius='8px'; t.style.zIndex=9999;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transform+=' translateY(-8px)'; }, 1200);
+  setTimeout(()=>{ t.remove(); }, 2000);
+}
+
+/* ============================
+   Click logging for accurate endGame report
+   ============================ */
+let clickLog = [];
+/* Modify spawnWord's click handler to push to clickLog.
+   To avoid re-wriring, we will intercept clicks globally on gameArea and record them
+   when a .word is clicked and has dataset.clicked. But we set dataset.clicked inside handler.
+   Instead, we will instrument spawnWord to push to clickLog directly. For simplicity,
+   we'll overwrite spawnWord after it's defined earlier, but we've already defined it with logging.
+   To ensure entries, we will patch all current nodes' handlers to push into clickLog.
+   However, since spawnWord above already pushes into clickLog via handler? Not yet.
+   We'll adopt approach: wrap original spawnWord: actually we included clickLog push nowhere.
+   Let's add a global event listener to capture clicks on .word and log them.
+*/
+gameArea.addEventListener('click', (ev)=>{
+  const w = ev.target.closest('.word');
+  if(!w) return;
+  // only log first click
+  if(w.dataset.logged) return;
+  w.dataset.logged = '1';
+  clickLog.push({word: w.textContent.trim(), type: w.dataset.type || 'distractor', time: Date.now()});
+});
+
+/* ============================
+   Load / reset text handlers
+   ============================ */
+loadTextBtn.addEventListener('click', ()=>{
+  const t = customText.value.trim();
+  if(!t){ alert('Pega primero el texto en el área.'); return; }
+  loadText(t);
+  beep(980,0.08,'sine',0.08);
+});
+resetTextBtn.addEventListener('click', ()=>{
+  customText.value = '';
+  loadText(originalText);
+  beep(440,0.08,'sine',0.08);
+});
+
+/* ============================
+   Start/Stop button bindings
+   ============================ */
+startBtn.addEventListener('click', ()=>{
+  clickLog = [];
+  startGame();
+});
+stopBtn.addEventListener('click', ()=>{ stopGame(); });
+
+/* ============================
+   Misc: intro, show mission preview, leaderboard UI
+   ============================ */
+function showIntroMission(){
+  chooseMission();
+  // show a small hint in feedback
+  feedback.style.display = 'block';
+  feedback.innerHTML = `<div style="font-weight:900">Instrucciones rápidas</div>
+  <div class="small" style="margin-top:6px">Lee el texto arriba. Todas las palabras se ven IGUALES. Toca SOLO las que creas que cumplen la misión. 
+  Evita las bombas (quitan tiempo). Compra power-ups con tus puntos. ¡Las palabras correctas no están marcadas!</div>`;
+  setTimeout(()=>{ feedback.style.display='none'; }, 4800);
+  updateLeaderboardUI();
+}
+
+/* load leaderboard on init */
+updateLeaderboardUI();
+
+/* init: show mission */
+showIntroMission();
+
+/* helper: adjust UI on resize to avoid overflow */
+window.addEventListener('resize', ()=>{
+  spawned.forEach(n=>{
+    const maxL = Math.max(1, gameArea.clientWidth - 120);
+    const maxT = Math.max(1, gameArea.clientHeight - 32);
+    const left = Math.min(parseFloat(n.style.left||0), maxL);
+    const top = Math.min(parseFloat(n.style.top||0), maxT);
+    n.style.left = left + 'px'; n.style.top = top + 'px';
+  });
+});
+
+/* Small polish: keyboard shortcuts */
+window.addEventListener('keydown', (e)=>{
+  if(e.key === ' '){ e.preventDefault(); if(startBtn.style.display !== 'none') startBtn.click(); else stopBtn.click(); }
+  if(e.key === 'h') hintBtn.click();
+  if(e.key === 'm') powerupMultBtn.click();
+  if(e.key === 't') powerupTimeBtn.click();
+});
+
+/* ensure a clean stop on page unload */
+window.addEventListener('beforeunload', ()=>{ clearIntervals(); });
+
+/* final note: done */
 </script>
 </body>
 </html>
-
